@@ -3,12 +3,13 @@
 {% block content %}
 
 <div class="col-md-6 offset-md-3">
-    <h1>Add Record</h1><br>
-    <form method="post" action="{% url 'add_record'%}">
+    <h1>Update Record</h1><br>
+    <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <br>
-        <span><button type="submit" class="btn btn-secondary">Add Record</button>
+
+        <span><button type="submit" class="btn btn-secondary">Update Record</button>
             <a href="{% url 'home'%}" class="btn btn-primary">Back</a></span>
 
     </form>

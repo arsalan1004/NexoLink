@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SignUpForm
+from .forms import SignUpForm, addRecordForm
 from .models import Record
 
 
@@ -52,6 +52,7 @@ def register_user(request):
         form = SignUpForm()
     return render(request, 'register.html', {'form': form})
 
+
 # Individual record Controller
 def customer_records(request, pk):
     if request.user.is_authenticated:
@@ -61,9 +62,21 @@ def customer_records(request, pk):
     messages.success(request, "You must be logged in to view records")
     return redirect('home')
 
+
 # Adding Record Controller
 def add_record(request):
-    return render(request, 'add_record.html', {})
+    form = addRecordForm(request.POST or None)
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Record added successfully")
+                return redirect('home')
+        return render(request, 'add_record.html', {'form': form})
+    else:
+        messages.success(request, "You must be logged in to add a record")
+        return redirect('home')
+
 
 # Deleting Record Controller
 def delete_record(request, pk):
@@ -76,3 +89,17 @@ def delete_record(request, pk):
         messages.success(request, "You must be logged in to delete this record")
         return redirect('home')
 
+# Update Record Controller
+def update_record(request, pk):
+    if request.user.is_authenticated:
+        current_record = Record.objects.get(id=pk)
+        form = addRecordForm(request.POST or None, instance=current_record)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Record Updated Successfully.")
+            return redirect('home')
+        else:
+            return render(request, 'update_record.html', {'form':form})
+    else:
+        messages.success(request, "You must be logged in to delete this record")
+        return redirect('home')
